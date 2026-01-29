@@ -2,6 +2,8 @@ import streamlit as st
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import cv2
 import mediapipe as mp
+import mediapipe.python.solutions.holistic as mp_holistic
+import mediapipe.python.solutions.drawing_utils as mp_drawing
 import numpy as np
 import torch
 import torch.nn as nn
@@ -56,7 +58,13 @@ model, actions, device = load_resources()
 # --- 4. REAL-TIME ENGINE ---
 class SignTransformer(VideoTransformerBase):
     def __init__(self):
-        self.mp_holistic = mp.solutions.holistic.Holistic()
+        self.mp_holistic = mp_holistic.Holistic(
+         static_image_mode=False,
+         model_complexity=1,
+         smooth_landmarks=True,
+         min_detection_confidence=0.5,
+         min_tracking_confidence=0.5
+          )
         self.sequence = []
         self.prediction = "..."
 
@@ -85,4 +93,10 @@ st.set_page_config(page_title="Sign Language AI", layout="wide")
 st.title("🤟 Real-Time Sign Language Translator")
 st.sidebar.info("This model recognizes 200 signs with 82.9% accuracy.")
 
-webrtc_streamer(key="sign_lang", video_transformer_factory=SignTransformer)
+webrtc_streamer(
+    key="sign_lang", 
+    video_processor_factory=SignTransformer, # Updated argument name
+    rtc_configuration={ 
+        "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+    }
+)
