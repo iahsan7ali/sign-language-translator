@@ -2,8 +2,8 @@ import streamlit as st
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import cv2
 import mediapipe as mp
-import mediapipe.python.solutions.holistic as mp_holistic
-import mediapipe.python.solutions.drawing_utils as mp_drawing
+mp_holistic = mp.solutions.holistic
+mp_drawing = mp.solutions.drawing_utils
 import numpy as np
 import torch
 import torch.nn as nn
